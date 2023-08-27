@@ -1,20 +1,84 @@
 /* Set height of the grid so .sidenav can be 100% (adjust if needed) */
-.row.content {height: 1500px}
+.content {
+  height: 1400px;
+  background-color: #292B31;
+  color: rgb(220, 220, 220);
+  font-family: "Quicksand", sans-serif; 
+}
     
 /* Set gray background color and 100% height */
 .sidenav {
-  background-color: #f1f1f1;
+  background-color: #535353;
   height: 100%;
 }
+.nav li a {
+  color: white;
+  transition: 0.3s;
+}
+.nav li a:hover {
+  color: #292B31;
+}
 
-/* Set black background color, white text and some padding */
+.form-label {
+  margin-top: 10px;
+  margin-bottom: 0px;
+}
+
+.form-control {
+  resize: none;
+}
+
+.form-group textarea, .form-group input {
+  border-color: black;
+  background-color: #454953
+}
+
+.col-sm-10 {
+  position: relative;
+  margin-left: 15px;
+  border: 1px solid #000;
+  background-color: #454953;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  color: rgb(220, 220, 220);
+}
+
+.comment-date {
+  color: rgb(146, 146, 146);
+}
+
+.edit-btn, .delete-btn {
+  position: absolute;
+  top: 5px;
+  border: none;
+  background-color: #454953;
+  border-radius: 5px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.5s; 
+}
+
+.edit-btn {
+  right: 55px; 
+}
+
+.edit-btn:hover, .delete-btn:hover {
+  color: white;
+  border-radius: 5px;
+  background-color: #8d909b; 
+  padding: 2px 5px;
+}
+
+.delete-btn {
+  right: 5px
+}
+
 footer {
-  background-color: #555;
+  background-color: #131313;
   color: white;
   padding: 15px;
 }
 
-/* On small screens, set height to 'auto' for sidenav and grid */
 @media screen and (max-width: 767px) {
   .sidenav {
     height: auto;
