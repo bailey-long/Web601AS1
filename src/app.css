@@ -30,7 +30,8 @@
 
 .form-group textarea, .form-group input {
   border-color: black;
-  background-color: #454953
+  background-color: #454953;
+  color: white;
 }
 
 .col-sm-10 {
