@@ -2,9 +2,13 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const bodyParser = require('body-parser');
+const { EventEmitter } = require('events'); // Import EventEmitter
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// Create an event emitter to handle SSE
+const eventEmitter = new EventEmitter();
 
 // Dummy database in memory
 const COMMENTS_FILE_PATH = path.join(__dirname, 'comments.json');
@@ -49,7 +53,7 @@ fs.readFile(COMMENTS_FILE_PATH, 'utf8', (err, data) => {
 });
 
 app.post('/comment', (req, res) => {
-    const {comment} = req.body;
+    const comment = req.body;
 
     // Read existing comments from the JSON file
     fs.readFile(COMMENTS_FILE_PATH, 'utf8', (err, data) => {
@@ -71,11 +75,61 @@ app.post('/comment', (req, res) => {
             }
 
             console.log(comment);
-            res.send(comment);
+            return res.send(comment);
         });
     });
 });
 
+// SSE endpoint
+app.get('/sse', (req, res) => {
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+
+    const sendComment = (comment) => {
+        res.write(`data: ${JSON.stringify(comment)}\n\n`);
+    };
+
+    // Listen for 'new-comment' events and send comments to the client
+    eventEmitter.on('new-comment', sendComment);
+
+    // Handle client disconnect
+    req.on('close', () => {
+        eventEmitter.off('new-comment', sendComment);
+    });
+});
+
+app.post('/comment', (req, res) => {
+    const { comment } = req.body;
+
+    // Read existing comments from the JSON file
+    fs.readFile(COMMENTS_FILE_PATH, 'utf8', (err, data) => {
+        if (err) {
+            console.error(err);
+            res.status(500).send('Internal Server Error');
+            return;
+        }
+
+        let existingComments = JSON.parse(data);
+        existingComments.push(comment);
+
+        // Write updated comments back to the JSON file
+        fs.writeFile(COMMENTS_FILE_PATH, JSON.stringify(existingComments, null, 2), 'utf8', err => {
+            if (err) {
+                console.error(err);
+                res.status(500).send('Internal Server Error');
+                return;
+            }
+
+            console.log(comment);
+
+            // Emit a 'new-comment' event to send the comment to connected clients
+            eventEmitter.emit('new-comment', comment);
+
+            res.send(comment);
+        });
+    });
+});
 /*
 
 app.post('/login', (req, res) => {
