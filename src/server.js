@@ -76,7 +76,8 @@ app.post('/comment', (req, res) => {
             }
 
             console.log(commentBlock);
-            return res.send(commentBlock);
+
+            res.redirect('back');
         });
     });
 });
@@ -100,37 +101,6 @@ app.get('/sse', (req, res) => {
     });
 });
 
-app.post('/comment', (req, res) => {
-    const { comment } = req.body;
-
-    // Read existing comments from the JSON file
-    fs.readFile(COMMENTS_FILE_PATH, 'utf8', (err, data) => {
-        if (err) {
-            console.error(err);
-            res.status(500).send('Internal Server Error');
-            return;
-        }
-
-        let existingComments = JSON.parse(data);
-        existingComments.push(comment);
-
-        // Write updated comments back to the JSON file
-        fs.writeFile(COMMENTS_FILE_PATH, JSON.stringify(existingComments, null, 2), 'utf8', err => {
-            if (err) {
-                console.error(err);
-                res.status(500).send('Internal Server Error');
-                return;
-            }
-
-            console.log(comment);
-
-            // Emit a 'new-comment' event to send the comment to connected clients
-            eventEmitter.emit('new-comment', comment);
-
-            res.send(comment);
-        });
-    });
-});
 /*
 
 app.post('/login', (req, res) => {
