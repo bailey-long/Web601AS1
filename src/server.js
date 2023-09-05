@@ -32,13 +32,6 @@ app.get('/', (req, res) => {
     });
 });
 
-// Middleware to log request details
-app.use((req, res, next) => {
-    console.log(`Received request from ${req.url}`);
-    next(); // Don't forget to call next() to continue to the next middleware/route
-});
-
-
 //Read existing comments from the JSON file and store in memory
 fs.readFile(COMMENTS_FILE_PATH, 'utf8', (err, data) => {
   if (!err) {
