@@ -53,7 +53,8 @@ fs.readFile(COMMENTS_FILE_PATH, 'utf8', (err, data) => {
 });
 
 app.post('/comment', (req, res) => {
-    const comment = req.body;
+    const {name, comment} = req.body;
+    const commentBlock = {name,comment};
 
     // Read existing comments from the JSON file
     fs.readFile(COMMENTS_FILE_PATH, 'utf8', (err, data) => {
@@ -64,7 +65,7 @@ app.post('/comment', (req, res) => {
         }
 
         let comments = JSON.parse(data);
-        comments.push(comment);
+        comments.push(commentBlock);
 
         // Write updated comments back to the JSON file
         fs.writeFile(COMMENTS_FILE_PATH, JSON.stringify(comments, null, 2), 'utf8', err => {
@@ -74,8 +75,8 @@ app.post('/comment', (req, res) => {
                 return;
             }
 
-            console.log(comment);
-            return res.send(comment);
+            console.log(commentBlock);
+            return res.send(commentBlock);
         });
     });
 });
