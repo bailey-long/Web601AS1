@@ -2,13 +2,9 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const bodyParser = require('body-parser');
-const { EventEmitter } = require('events'); // Import EventEmitter
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
-
-// Create an event emitter to handle SSE
-const eventEmitter = new EventEmitter();
 
 // Dummy database in memory
 const COMMENTS_FILE_PATH = path.join(__dirname, 'comments.json');
@@ -42,8 +38,6 @@ app.use((req, res, next) => {
     next(); // Don't forget to call next() to continue to the next middleware/route
 });
 
-// Init
-let comments = []; // Initialize as empty array
 
 //Read existing comments from the JSON file and store in memory
 fs.readFile(COMMENTS_FILE_PATH, 'utf8', (err, data) => {

@@ -26,5 +26,9 @@
   {
     "name": "COMMENT WRITER",
     "comment": "COMMENT"
+  },
+  {
+    "name": "Another commenter",
+    "comment": "another comment"
   }
 ]
