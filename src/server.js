@@ -82,25 +82,6 @@ app.post('/comment', (req, res) => {
     });
 });
 
-// SSE endpoint
-app.get('/sse', (req, res) => {
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Connection', 'keep-alive');
-
-    const sendComment = (comment) => {
-        res.write(`data: ${JSON.stringify(comment)}\n\n`);
-    };
-
-    // Listen for 'new-comment' events and send comments to the client
-    eventEmitter.on('new-comment', sendComment);
-
-    // Handle client disconnect
-    req.on('close', () => {
-        eventEmitter.off('new-comment', sendComment);
-    });
-});
-
 /*
 
 app.post('/login', (req, res) => {
