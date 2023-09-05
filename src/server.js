@@ -76,17 +76,12 @@ app.post('/comment', (req, res) => {
     });
 });
 
-/*
+/*PUT (Edit Comment)
 
-app.post('/login', (req, res) => {
-  const { username, password } = req.body;
-  const user = users.find(user => user.username === username && user.password === password);
-  if (user) {
-    res.send('Login successful');
-  } else {
-    res.send('Login failed');
-  }
-});
+*/
+
+/*DELETE (Delete Comment)
+
 */
 
 // Listen for incoming requests
