@@ -1,5 +1,3 @@
-console.log("asdasd")
-
 //Populating comments based on JSON
  // Fetch the JSON file
  fetch('comments.json')
