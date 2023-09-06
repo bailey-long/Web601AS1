@@ -44,3 +44,23 @@
 });
 
 //Deleting and Editing Comments
+
+document.querySelectorAll(".edit-btn").forEach((editButton, index) => {
+  editButton.addEventListener("click", () => {
+    const commentText = document.querySelectorAll(".comment-text")[index];
+    const editInput = document.querySelectorAll(".edit-comment")[index];
+    const editButton = document.querySelectorAll(".save-btn")[index];
+
+    if (editInput.style.display === "none") {
+      editInput.value = commentText.textContent;
+      commentText.style.display = "none";
+      editInput.style.display = "block";
+      editButton.textContent = "Save";
+    } else {
+      commentText.textContent = editInput.value;
+      commentText.style.display = "block";
+      editInput.style.display = "none";
+      editButton.textContent = "Edit";
+    }
+  });
+});
