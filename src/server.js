@@ -79,10 +79,9 @@ app.post('/comment', (req, res) => {
 /*PUT (Edit Comment)
 
 */
-
 app.put('/comment/:index', (req, res) => {
     const index = parseInt(req.params.index);
-    const { comment } = req.body;
+    const { name, comment } = req.body;
   
     // Read existing comments from the JSON file
     fs.readFile(COMMENTS_FILE_PATH, 'utf8', (err, data) => {
@@ -96,6 +95,7 @@ app.put('/comment/:index', (req, res) => {
   
       if (index >= 0 && index < comments.length) {
         // Update the comment at the specified index
+        comments[index].name = name;
         comments[index].comment = comment;
   
         // Write updated comments back to the JSON file
@@ -106,15 +106,13 @@ app.put('/comment/:index', (req, res) => {
             return;
           }
   
-          res.status(201).json({
-            message: 'Comment has been edited.',
-            });
+          res.send('Comment has been edited');
         });
       } else {
         res.status(400).send('Comment not found');
       }
     });
-});
+  });
   
 /*DELETE (Delete Comment)
 
