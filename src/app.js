@@ -46,11 +46,10 @@
 //Deleting and Editing Comments
 
 document.querySelectorAll(".edit-btn").forEach((editButton, index) => {
-  editButton.addEventListener("click", () => {
-    const commentText = document.querySelectorAll(".comment-text")[index];
-    const editInput = document.querySelectorAll(".edit-comment")[index];
-    const editButton = document.querySelectorAll(".save-btn")[index];
+  const commentText = document.querySelectorAll(".comment-text")[index];
+  const editInput = document.querySelectorAll(".edit-comment")[index];  
 
+  editButton.addEventListener("click", () => {
     if (editInput.style.display === "none") {
       editInput.value = commentText.textContent;
       commentText.style.display = "none";
