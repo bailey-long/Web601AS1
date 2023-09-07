@@ -40,11 +40,7 @@
       commentDiv.appendChild(editComment);
 
       editButton.addEventListener("click", function() {
-        if (editButton.textContent === "Edit") {
           toggleEditComment(commentText, editComment, editButton, commentName);
-        } else if (editButton.textContent === "Save") {
-          saveEditedComment(commentText, editComment, editButton, commentName, commentData);
-        }
       });
 
       // Append the comment container to the comments container
@@ -55,55 +51,38 @@
     console.error("Error fetching JSON data:", error);
   });
 
-
-//Deleting and Editing Comments
-
-// Function to toggle between editing and saving a comment.
+// Function to toggle between editing and saving a comment. 
+// Sends a PUT request to the server to update the comment when clicking 'Save'
 function toggleEditComment(commentText, editComment, editButton, commentName) {
   if (editComment.style.display === "none") {
-    // Enable editing mode
+
+    // Enable editing
     editComment.value = commentText.textContent;
     commentText.style.display = "none";
     editComment.style.display = "block";
     editButton.textContent = "Save";
   } else {
-    commentText.textContent = newComment;
+    
+    // Save the comment
+    commentText.textContent = editComment.value;
     commentText.style.display = "block";
     editComment.style.display = "none";
     editButton.textContent = "Edit";
 
-  }
-}
-
-function saveEditedComment(commentText, editComment, editButton, commentName, commentData) {
-  const newComment = commentData.comment;
-
-  // Create an object with the updated comment data
-  const updatedComment = {
-    name: commentData.name,
-    comment: newComment,
-  };
-
-  // Send a PUT request to update the comment on the server
-  fetch(`/comment/${commentData.name}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(updatedComment),
-  })
+    fetch('/comment/' + commentName.textContent, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({newComment: editComment.value})
+    })
     .then(function(response) {
-      if (response.ok) {
-        // Update the comment display
-        commentText.textContent = newComment;
-        commentText.style.display = "block";
-        editComment.style.display = "none";
-        editButton.textContent = "Edit";
-      } else {
-        console.error('Error updating comment:', response.statusText);
+      if (!response.ok) {
+        console.error("Error updating comment:", response.statusText);
       }
     })
     .catch(function(error) {
-      console.error('Error updating comment:', error);
-    });
+      console.error("Error updating comment:", error);
+    }); 
+  }
 }

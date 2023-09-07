@@ -5,8 +5,7 @@ const bodyParser = require('body-parser');
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
-
-let comments = [];
+app.use(bodyParser.json());
 
 // Dummy database in memory
 const COMMENTS_FILE_PATH = path.join(__dirname, 'comments.json');
@@ -39,7 +38,6 @@ app.use((req, res, next) => {
     console.log(`Received request from ${req.url}`);
     next(); // Don't forget to call next() to continue to the next middleware/route
 });
-
 
 //Read existing comments from the JSON file and store in memory
 fs.readFile(COMMENTS_FILE_PATH, 'utf8', (err, data) => {
@@ -78,35 +76,41 @@ app.post('/comment', (req, res) => {
     });
 });
 
+
 app.put('/comment/:name', (req, res) => {
-    const { name } = req.params;
-    const { comment } = req.body;
-    const updatedComment = { name, comment };
+    const commentName = req.params.name;
+    const newComment = req.body.newComment;
   
-    // Find the index of the comment to be updated in the 'comments' array
-    const index = comments.findIndex((c) => c.name === name);
+    // Read existing comments from the file
+    fs.readFile('comments.json', 'utf8', (err, data) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Error reading comments.json');
+        return;
+      }
   
-    if (index !== -1) {
-      // Update the comment in memory
-      comments[index] = updatedComment;
+      const comments = JSON.parse(data);
+      // Find the comment by name and update it
+      const updatedCommentIndex = comments.findIndex(comment => comment.name === commentName);
+
+      if (updatedCommentIndex === -1) {
+        res.status(404).send('Comment not found');
+        return;
+      }
   
-      // Write updated comments back to the JSON file
-      fs.writeFile(COMMENTS_FILE_PATH, JSON.stringify(comments, null, 2), 'utf8', (err) => {
+      comments[updatedCommentIndex].comment = newComment;
+      // Save the updated comments back to the json file
+      fs.writeFile('comments.json', JSON.stringify(comments, null, 2), (err) => {
         if (err) {
           console.error(err);
-          res.status(500).send('Internal Server Error');
+          res.status(500).send('Error writing comments.json');
           return;
         }
   
-        console.log('Comment updated:', updatedComment);
-        res.sendStatus(200); // Send a success response
+        res.send('Comment updated successfully');
       });
-    } else {
-      res.status(404).send('Comment not found'); // Send a not found response if the comment does not exist
-    }
-  });
-  
-  
+    });
+});
 
 
 // Listen for incoming requests
