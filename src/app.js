@@ -8,7 +8,6 @@ function loadComments() {
  .then(function(jsonData) {
     // Get the comments container element
     var commentsContainer = document.getElementById("comment-container");
-    commentsContainer.innerHTML = "";
     // Iterate through the JSON data and create HTML elements for each comment
     jsonData.forEach(function (commentData) {
       // Create elements for the comment
@@ -34,17 +33,17 @@ function loadComments() {
       editComment.className = "edit-comment";
       editComment.style.display = "none";
 
-      editButton.addEventListener("click", function() {
-        console.log("Edit button clicked")
-        toggleEditComment(commentText, editComment, editButton, commentName);
-      });
-
       // Append elements to the comment container
       commentDiv.appendChild(editButton);
       commentDiv.appendChild(deleteButton);
       commentDiv.appendChild(commentName);
       commentDiv.appendChild(commentText);
       commentDiv.appendChild(editComment);
+
+      editButton.addEventListener("click", function() {
+        console.log("Edit button clicked")
+        toggleEditComment(commentText, editComment, editButton, commentName);
+      });
 
       // Append the comment container to the comments container
       commentsContainer.appendChild(commentDiv);
@@ -67,28 +66,29 @@ function toggleEditComment(commentText, editComment, editButton, commentName) {
     editButton.textContent = "Save";
   } else {
     // Save the edited comment and exit editing mode
-    const newName = commentName.textContent;
+    const name = commentName.textContent;
     const newComment = editComment.value;
 
+    commentText.textContent = newComment;
     commentText.style.display = "block";
     editComment.style.display = "none";
     editButton.textContent = "Edit";
 
     // Send a PUT request to update the comment on the server
     const commentIndex = Array.from(document.querySelectorAll(".edit-btn")).indexOf(editButton);
-    updateComment(commentIndex, newName, newComment);
+    updateComment(commentIndex, name, newComment);
   }
 }
 
 
 // Function to update comment on server. Called when a comment is edited.
-function updateComment(index, newName, newComment) {
+function updateComment(index, name, newComment) {
   fetch(`/comment/${index}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ name: newName, comment: newComment }),
+    body: JSON.stringify({ name, comment: newComment }),
   })
     .then(function (response) {
       if (response.ok) {

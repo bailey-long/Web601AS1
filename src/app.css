@@ -5,12 +5,7 @@
   color: rgb(220, 220, 220);
   font-family: "Quicksand", sans-serif; 
 }
-    
-/* Set gray background color and 100% height */
-.sidenav {
-  background-color: #535353;
-  height: 100%;
-}
+
 .nav li a {
   color: white;
   transition: 0.3s;
