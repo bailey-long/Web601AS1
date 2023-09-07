@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 // Dummy database in memory
 const COMMENTS_FILE_PATH = path.join(__dirname, 'comments.json');
@@ -37,7 +38,6 @@ app.use((req, res, next) => {
     console.log(`Received request from ${req.url}`);
     next(); // Don't forget to call next() to continue to the next middleware/route
 });
-
 
 //Read existing comments from the JSON file and store in memory
 fs.readFile(COMMENTS_FILE_PATH, 'utf8', (err, data) => {
@@ -76,47 +76,42 @@ app.post('/comment', (req, res) => {
     });
 });
 
-/*PUT (Edit Comment)
 
-*/
-app.put('/comment/:index', (req, res) => {
-    const index = parseInt(req.params.index);
-    const { name, comment } = req.body;
+app.put('/comment/:name', (req, res) => {
+    const commentName = req.params.name;
+    const newComment = req.body.newComment;
   
-    // Read existing comments from the JSON file
-    fs.readFile(COMMENTS_FILE_PATH, 'utf8', (err, data) => {
+    // Read existing comments from the file
+    fs.readFile('comments.json', 'utf8', (err, data) => {
       if (err) {
         console.error(err);
-        res.status(500).send('Server Error');
+        res.status(500).send('Error reading comments.json');
         return;
       }
   
-      let comments = JSON.parse(data);
-  
-      if (index >= 0 && index < comments.length) {
-        // Update the comment at the specified index
-        comments[index].name = name;
-        comments[index].comment = comment;
-  
-        // Write updated comments back to the JSON file
-        fs.writeFile(COMMENTS_FILE_PATH, JSON.stringify(comments, null, 2), 'utf8', err => {
-          if (err) {
-            console.error(err);
-            res.status(500).send('Server Error');
-            return;
-          }
-  
-          res.send('Comment has been edited');
-        });
-      } else {
-        res.status(400).send('Comment not found');
-      }
-    });
-  });
-  
-/*DELETE (Delete Comment)
+      const comments = JSON.parse(data);
+      // Find the comment by name and update it
+      const updatedCommentIndex = comments.findIndex(comment => comment.name === commentName);
 
-*/
+      if (updatedCommentIndex === -1) {
+        res.status(404).send('Comment not found');
+        return;
+      }
+  
+      comments[updatedCommentIndex].comment = newComment;
+      // Save the updated comments back to the json file
+      fs.writeFile('comments.json', JSON.stringify(comments, null, 2), (err) => {
+        if (err) {
+          console.error(err);
+          res.status(500).send('Error writing comments.json');
+          return;
+        }
+  
+        res.send('Comment updated successfully');
+      });
+    });
+});
+
 
 // Listen for incoming requests
 app.listen(3000, () => console.log('Server running on port 3000'));

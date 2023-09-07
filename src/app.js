@@ -1,5 +1,4 @@
 //Populating comments based on JSON
-function loadComments() {
  // Fetch the JSON file
  fetch('comments.json')
  .then(function(response) {
@@ -41,8 +40,7 @@ function loadComments() {
       commentDiv.appendChild(editComment);
 
       editButton.addEventListener("click", function() {
-        console.log("Edit button clicked")
-        toggleEditComment(commentText, editComment, editButton, commentName);
+          toggleEditComment(commentText, editComment, editButton, commentName);
       });
 
       // Append the comment container to the comments container
@@ -52,55 +50,39 @@ function loadComments() {
   .catch(function(error) {
     console.error("Error fetching JSON data:", error);
   });
-}
 
-//Deleting and Editing Comments
-
-// Function to toggle between editing and saving a comment. Sends PUT request to update comment on server.
+// Function to toggle between editing and saving a comment. 
+// Sends a PUT request to the server to update the comment when clicking 'Save'
 function toggleEditComment(commentText, editComment, editButton, commentName) {
   if (editComment.style.display === "none") {
-    // Enable editing mode
+
+    // Enable editing
     editComment.value = commentText.textContent;
     commentText.style.display = "none";
     editComment.style.display = "block";
     editButton.textContent = "Save";
   } else {
-    // Save the edited comment and exit editing mode
-    const name = commentName.textContent;
-    const newComment = editComment.value;
-
-    commentText.textContent = newComment;
+    
+    // Save the comment
+    commentText.textContent = editComment.value;
     commentText.style.display = "block";
     editComment.style.display = "none";
     editButton.textContent = "Edit";
 
-    // Send a PUT request to update the comment on the server
-    const commentIndex = Array.from(document.querySelectorAll(".edit-btn")).indexOf(editButton);
-    updateComment(commentIndex, name, newComment);
-  }
-}
-
-
-// Function to update comment on server. Called when a comment is edited.
-function updateComment(index, name, newComment) {
-  fetch(`/comment/${index}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ name, comment: newComment }),
-  })
-    .then(function (response) {
-      if (response.ok) {
-        console.log(`Comment ${index} has been updated.`);
-        loadComments();
-      } else {
-        console.error(`Failed to update comment ${index}.`);
+    fetch('/comment/' + commentName.textContent, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({newComment: editComment.value})
+    })
+    .then(function(response) {
+      if (!response.ok) {
+        console.error("Error updating comment:", response.statusText);
       }
     })
-    .catch(function (error) {
+    .catch(function(error) {
       console.error("Error updating comment:", error);
-    });
+    }); 
+  }
 }
-
-loadComments();
