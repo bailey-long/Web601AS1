@@ -112,6 +112,35 @@ app.put('/comment/:name', (req, res) => {
     });
 });
 
+app.delete('/comment/:id', (req, res) => {
+    const deleteID = req.params.id;
+
+    // Read existing comments from the JSON file
+    fs.readFile(COMMENTS_FILE_PATH, 'utf8', (err, data) => {
+        if (err) {
+            console.error(err);
+            res.status(500).send('Internal Server Error');
+            return;
+        }
+
+        const comments = JSON.parse(data);
+        const deletedComment = comments.findIndex(comment => comment.id === deleteID);
+        comments.splice(deletedComment, 1);
+
+    // Write updated comments back to the JSON file
+    fs.writeFile(COMMENTS_FILE_PATH, JSON.stringify(comments, null, 2), err => {
+        if (err) {
+            console.error(err);
+            res.status(500).send('Internal Server Error');
+            return;
+        }
+
+        res.send('Comment deleted!');
+        });
+    });
+    
+});
+
 
 // Listen for incoming requests
 app.listen(3000, () => console.log('Server running on port 3000'));

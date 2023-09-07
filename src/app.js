@@ -43,6 +43,13 @@
           toggleEditComment(commentText, editComment, editButton, commentName);
       });
 
+      deleteButton.addEventListener("click", function() {
+        commentsContainer.removeChild(commentDiv);
+        fetch('/comment/' + commentName.textContent, {
+          method: 'Delete'
+        })
+      });
+
       // Append the comment container to the comments container
       commentsContainer.appendChild(commentDiv);
     });
