@@ -5,12 +5,7 @@
   color: rgb(220, 220, 220);
   font-family: "Quicksand", sans-serif; 
 }
-    
-/* Set gray background color and 100% height */
-.sidenav {
-  background-color: #535353;
-  height: 100%;
-}
+
 .nav li a {
   color: white;
   transition: 0.3s;
@@ -31,7 +26,7 @@
 .form-group textarea, .form-group input {
   border-color: black;
   background-color: #454953;
-  color: white;
+  color: rgb(220, 220, 220);
 }
 
 .col-sm-10 {
@@ -68,6 +63,20 @@
   border-radius: 5px;
   background-color: #8d909b; 
   padding: 2px 5px;
+}
+
+.comment-text, .edit-comment {
+  resize: none;
+  width: 100%;
+  border: none;
+  border-radius: 5px;
+  background-color: #454953;
+  color: rgb(220, 220, 220);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+.edit-comment:focus {
+  outline: none;
 }
 
 .delete-btn {
