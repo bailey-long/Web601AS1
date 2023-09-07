@@ -43,6 +43,14 @@
           toggleEditComment(commentText, editComment, editButton, commentName);
       });
 
+      deleteButton.addEventListener("click", function() {
+        // Remove the comment from the page
+        commentsContainer.removeChild(commentDiv);
+        fetch('/comment/' + commentName.textContent, {
+          method: 'DELETE'
+        })
+      });
+
       // Append the comment container to the comments container
       commentsContainer.appendChild(commentDiv);
     });
@@ -76,13 +84,5 @@ function toggleEditComment(commentText, editComment, editButton, commentName) {
       },
       body: JSON.stringify({newComment: editComment.value})
     })
-    .then(function(response) {
-      if (!response.ok) {
-        console.error("Error updating comment:", response.statusText);
-      }
-    })
-    .catch(function(error) {
-      console.error("Error updating comment:", error);
-    }); 
   }
 }

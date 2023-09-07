@@ -46,6 +46,7 @@ fs.readFile(COMMENTS_FILE_PATH, 'utf8', (err, data) => {
   }
 });
 
+// POST Method
 app.post('/comment', (req, res) => {
     const {name, comment} = req.body;
     const commentBlock = {name,comment};
@@ -76,7 +77,7 @@ app.post('/comment', (req, res) => {
     });
 });
 
-
+// PUT Method
 app.put('/comment/:name', (req, res) => {
     const commentName = req.params.name;
     const newComment = req.body.newComment;
@@ -111,6 +112,41 @@ app.put('/comment/:name', (req, res) => {
       });
     });
 });
+
+
+// DELETE Method
+app.delete('/comment/:name', (req, res) => {
+    const commentName = req.params.name;
+
+    fs.readFile(COMMENTS_FILE_PATH, 'utf8', (err, data) => {
+        if (err) {
+            console.error(err);
+            res.status(500).send('Error reading comments.json');
+            return;
+        }
+
+        const comments = JSON.parse(data);
+        const deletedCommentIndex = comments.findIndex(comment => comment.name === commentName);
+
+        if (deletedCommentIndex === -1) {
+            res.status(404).send('Comment not found');
+            return;
+        }
+
+        comments.splice(deletedCommentIndex, 1);
+
+        fs.writeFile(COMMENTS_FILE_PATH, JSON.stringify(comments, null, 2), err => {
+            if (err) {
+                console.error(err);
+                res.status(500).send('Error writing comments.json');
+                return;
+            }
+
+            res.send('Comment deleted successfully');
+        });
+    });
+});
+
 
 
 // Listen for incoming requests
