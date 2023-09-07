@@ -80,6 +80,42 @@ app.post('/comment', (req, res) => {
 
 */
 
+app.put('/comment/:index', (req, res) => {
+    const index = parseInt(req.params.index);
+    const { comment } = req.body;
+  
+    // Read existing comments from the JSON file
+    fs.readFile(COMMENTS_FILE_PATH, 'utf8', (err, data) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+        return;
+      }
+  
+      let comments = JSON.parse(data);
+  
+      if (index >= 0 && index < comments.length) {
+        // Update the comment at the specified index
+        comments[index].comment = comment;
+  
+        // Write updated comments back to the JSON file
+        fs.writeFile(COMMENTS_FILE_PATH, JSON.stringify(comments, null, 2), 'utf8', err => {
+          if (err) {
+            console.error(err);
+            res.status(500).send('Server Error');
+            return;
+          }
+  
+          res.status(201).json({
+            message: 'Comment has been edited.',
+            });
+        });
+      } else {
+        res.status(400).send('Comment not found');
+      }
+    });
+});
+  
 /*DELETE (Delete Comment)
 
 */

@@ -29,11 +29,20 @@
     var commentText = document.createElement("p");
     commentText.textContent = commentData.comment;
 
+    var editComment = document.createElement("textarea");
+    editComment.className = "edit-comment";
+    editComment.style.display = "none";
+
     // Append elements to the comment container
     commentDiv.appendChild(editButton);
     commentDiv.appendChild(deleteButton);
     commentDiv.appendChild(commentName);
     commentDiv.appendChild(commentText);
+    commentDiv.appendChild(editComment);
+
+    editButton.addEventListener("click", function() {
+      toggleEditComment(commentText, editComment, editButton);
+    });
 
     // Append the comment container to the comments container
     commentsContainer.appendChild(commentDiv);
@@ -45,21 +54,45 @@
 
 //Deleting and Editing Comments
 
-document.querySelectorAll(".edit-btn").forEach((editButton, index) => {
-  const commentText = document.querySelectorAll(".comment-text")[index];
-  const editInput = document.querySelectorAll(".edit-comment")[index];  
+// Function to toggle between editing and saving a comment. Sends PUT request to update comment on server.
+function toggleEditComment(commentText, editComment, editButton) {
+  if (editComment.style.display === "none") {
+    // Enable editing
+    editComment.value = commentText.textContent;
+    commentText.style.display = "none";
+    editComment.style.display = "block";
+    editButton.textContent = "Save";
+  } else {
+    // Save the edited comment
+    commentText.textContent = editComment.value;
+    commentText.style.display = "block";
+    editComment.style.display = "none";
+    editButton.textContent = "Edit";
 
-  editButton.addEventListener("click", () => {
-    if (editInput.style.display === "none") {
-      editInput.value = commentText.textContent;
-      commentText.style.display = "none";
-      editInput.style.display = "block";
-      editButton.textContent = "Save";
-    } else {
-      commentText.textContent = editInput.value;
-      commentText.style.display = "block";
-      editInput.style.display = "none";
-      editButton.textContent = "Edit";
-    }
-  });
-});
+    // Send a PUT request to update the comment on the server
+    const commentIndex = Array.from(document.querySelectorAll(".edit-btn")).indexOf(editButton);
+    updateComment(commentIndex, editComment.value);
+  }
+}
+
+
+// Function to update comment on server. Called when a comment is edited.
+function updateComment(index, newComment) {
+  fetch(`/comment/${index}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ comment: newComment }),
+  })
+    .then(function (response) {
+      if (response.ok) {
+        console.log(`Comment ${index} has been updated.`);
+      } else {
+        console.error(`Failed to update comment ${index}.`);
+      }
+    })
+    .catch(function (error) {
+      console.error("Error updating comment:", error);
+    });
+}
