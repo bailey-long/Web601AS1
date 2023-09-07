@@ -6,6 +6,8 @@ const bodyParser = require('body-parser');
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 
+let comments = [];
+
 // Dummy database in memory
 const COMMENTS_FILE_PATH = path.join(__dirname, 'comments.json');
 
@@ -76,47 +78,36 @@ app.post('/comment', (req, res) => {
     });
 });
 
-/*PUT (Edit Comment)
-
-*/
-app.put('/comment/:index', (req, res) => {
-    const index = parseInt(req.params.index);
-    const { name, comment } = req.body;
+app.put('/comment/:name', (req, res) => {
+    const { name } = req.params;
+    const { comment } = req.body;
+    const updatedComment = { name, comment };
   
-    // Read existing comments from the JSON file
-    fs.readFile(COMMENTS_FILE_PATH, 'utf8', (err, data) => {
-      if (err) {
-        console.error(err);
-        res.status(500).send('Server Error');
-        return;
-      }
+    // Find the index of the comment to be updated in the 'comments' array
+    const index = comments.findIndex((c) => c.name === name);
   
-      let comments = JSON.parse(data);
+    if (index !== -1) {
+      // Update the comment in memory
+      comments[index] = updatedComment;
   
-      if (index >= 0 && index < comments.length) {
-        // Update the comment at the specified index
-        comments[index].name = name;
-        comments[index].comment = comment;
+      // Write updated comments back to the JSON file
+      fs.writeFile(COMMENTS_FILE_PATH, JSON.stringify(comments, null, 2), 'utf8', (err) => {
+        if (err) {
+          console.error(err);
+          res.status(500).send('Internal Server Error');
+          return;
+        }
   
-        // Write updated comments back to the JSON file
-        fs.writeFile(COMMENTS_FILE_PATH, JSON.stringify(comments, null, 2), 'utf8', err => {
-          if (err) {
-            console.error(err);
-            res.status(500).send('Server Error');
-            return;
-          }
-  
-          res.send('Comment has been edited');
-        });
-      } else {
-        res.status(400).send('Comment not found');
-      }
-    });
+        console.log('Comment updated:', updatedComment);
+        res.sendStatus(200); // Send a success response
+      });
+    } else {
+      res.status(404).send('Comment not found'); // Send a not found response if the comment does not exist
+    }
   });
   
-/*DELETE (Delete Comment)
+  
 
-*/
 
 // Listen for incoming requests
 app.listen(3000, () => console.log('Server running on port 3000'));
