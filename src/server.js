@@ -112,6 +112,7 @@ app.put('/comment/:name', (req, res) => {
     });
 });
 
+//Deletes a comment
 app.delete('/comment/:id', (req, res) => {
     const deleteID = req.params.id;
 
@@ -123,9 +124,9 @@ app.delete('/comment/:id', (req, res) => {
             return;
         }
 
-        const comments = JSON.parse(data);
-        const deletedComment = comments.findIndex(comment => comment.id === deleteID);
-        comments.splice(deletedComment, 1);
+    //const comments = JSON.parse(data);
+    const deletedComment = comments.findIndex(comment => comment.id === deleteID);
+    comments.splice(deletedComment, 1);
 
     // Write updated comments back to the JSON file
     fs.writeFile(COMMENTS_FILE_PATH, JSON.stringify(comments, null, 2), err => {
