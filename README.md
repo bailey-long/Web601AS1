@@ -1,9 +1,9 @@
 # Web601AS1
 Group Project for AS1
 
-We are creating a comment section
+We decided to create a comment section for a blog post.
 
 Team:
-Jackson_test
+Jackson
 Zane
 Bailey
